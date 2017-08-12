@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name = "YFVolumeView"
-  s.version = "1.0"
+  s.version = "1.0.0"
   s.summary = "Volume indicator as Indicator"
 
   s.homepage = "https://github.com/YuriFox/YFVolumeView/"
