@@ -1,6 +1,8 @@
 # YFVolumeView
 Convenient, beautiful and easy to use volume indicator written in Swift 3
 
+![YFVolumeView: Elegant Volume View as Instagram](https://github.com/YuriFox/YFVolumeView/blob/master/example.gif)
+
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
