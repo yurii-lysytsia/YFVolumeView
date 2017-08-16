@@ -66,7 +66,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let volumeIndicator = YFVolumeView.current
         volumeIndicator.isActive = true // Make active YFVolumeView and hide native HUD
         volumeIndicator.backgroundColor = .white // Set custom background color
-        
+        volumeIndicator.isAnimatingEnable = true // Change animation enable 
+
 //        if let window = self.window {
 //            volumeIndicator.setBackgroundColorAsWindowWithRootNavigationBar(window: window)
 //            // If AppDelegate.window.rootViewController is UINavigationController, volume indicator color will be as UINavigationController.navigationBar.barTintColor
@@ -76,6 +77,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     ...
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
         ...
@@ -84,11 +86,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         ...
 
-        return true
     }
-    
+
     ...
     
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        YFVolumeView.current.updateActiveState() // FIX.
+    }
+
+...
+
 }
 
 ```
