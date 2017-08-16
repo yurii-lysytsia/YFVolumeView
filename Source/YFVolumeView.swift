@@ -17,12 +17,17 @@ public class YFVolumeView: UIWindow {
     
     /// Status changes the activity of the YFVolumeView.
     /// If **true** then instead of the default MPVolumeView will be shown YFVolumeView.
+    /// Default is false
     public var isActive: Bool = false {
         didSet {
             isActive ? self.addOutputVolumeObserve() : self.removeOutputVolumeObserve()
             isActive ? MPVolumeView.hide() : MPVolumeView.present()
         }
     }
+    
+    /// Status of present/hide animation
+    /// Default is true
+    public var isAnimatingEnable: Bool = true
     
     fileprivate var presentedTimer: Timer? //Hide view timer
     
@@ -45,6 +50,15 @@ public class YFVolumeView: UIWindow {
         }
     }
     
+    /// Change view bakcground color. If window.rootViewController as UINavigationController, new background color will be equal UINavigationController.navigationBar.barTintColor
+    ///
+    /// - Parameter window: Window with root UINavigationController
+    public func setBackgroundColorAsWindowWithRootNavigationBar(window: UIWindow) {
+        guard let navigation = window.rootViewController as? UINavigationController else { return }
+        let color = navigation.navigationBar.barTintColor
+        self.backgroundColor = color
+    }
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         self.prepareToInit()
@@ -65,27 +79,30 @@ public class YFVolumeView: UIWindow {
     
 }
 
-//MARK: - Init
+//MARK: - Prepare to init
 extension YFVolumeView {
     
     fileprivate func prepareToInit() {
         
-        self.windowLevel = UIWindowLevelStatusBar
+        self.setFrame()
         
-        self.addSubview(self.progressView)
+        self.windowLevel = UIWindowLevelStatusBar
         
         if self.backgroundColor == nil {
             self.backgroundColor = .white
         }
         
+        self.addSubview(self.progressView)
+        
         self.progressView.progress = AVAudioSession.sharedInstance().outputVolume
         
     }
     
-    public func setBackgroundColorAsWindowWithRootNavigationBar(window: UIWindow) {
-        guard let navigation = window.rootViewController as? UINavigationController else { return }
-        let color = navigation.navigationBar.barTintColor
-        self.backgroundColor = color
+    fileprivate func setFrame() {
+        let screenWidth = UIScreen.main.applicationFrame.width
+        let statusBarHeight = UIApplication.shared.statusBarFrame.height
+        
+        self.frame = CGRect(x: 0, y: -statusBarHeight, width: screenWidth, height: statusBarHeight)
     }
     
 }
@@ -167,15 +184,30 @@ extension YFVolumeView {
     /// Present view
     public func present() {
         
+        self.updateProgress(AVAudioSession.sharedInstance().outputVolume, animated: false)
+        
         self.isHidden = false
-        self.scheduledPresentedTimer()
+        
+        let delay: TimeInterval = self.isAnimatingEnable ? 0.25 : 0
+        
+        UIView.animate(withDuration: delay, animations: {
+            self.frame.origin.y = 0
+        }) { _ in
+            self.scheduledPresentedTimer()
+        }
         
     }
     
     /// Hide view
     public func hide() {
         
-        self.isHidden = true
+        let delay: TimeInterval = self.isAnimatingEnable ? 0.25 : 0
+        
+        UIView.animate(withDuration: delay, animations: {
+            self.frame.origin.y = -self.frame.size.height
+        }) { _ in
+            self.isHidden = true
+        }
 
     }
     
