@@ -28,8 +28,9 @@ extension MPVolumeView {
     }
     
     static func present() {
+        let view = MPVolumeView()
         let window = application.delegate?.window
-        window??.addSubview(MPVolumeView())
+        window??.addSubview(view)
     }
 
 }

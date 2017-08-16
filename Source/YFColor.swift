@@ -6,7 +6,7 @@
 //  Copyright © 2017 Yuri Lysytsia. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 extension UIColor {
     

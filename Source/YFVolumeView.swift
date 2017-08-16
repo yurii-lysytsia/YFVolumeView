@@ -11,39 +11,38 @@ import MediaPlayer
 
 public class YFVolumeView: UIWindow {
 
-    /// The shared current object
-    public static var current: YFVolumeView = YFVolumeView(frame: UIApplication.shared.statusBarFrame)
+    /// The **shared** current object. 
+    /// You can configure a volume view through this variable
+    public static let current: YFVolumeView = YFVolumeView(frame: UIApplication.shared.statusBarFrame)
     
-    /// Статус который показывает или работает static let current при изменении громкости
+    /// Status changes the activity of the YFVolumeView.
+    /// If **true** then instead of the default MPVolumeView will be shown YFVolumeView.
     public var isActive: Bool = false {
         didSet {
             isActive ? self.addOutputVolumeObserve() : self.removeOutputVolumeObserve()
-            MPVolumeView.hide()
+            isActive ? MPVolumeView.hide() : MPVolumeView.present()
         }
     }
     
-    /// Таймер который отвечает за hide view
-    fileprivate var presentedTimer: Timer?
+    fileprivate var presentedTimer: Timer? //Hide view timer
     
-    /// Progress view
-    fileprivate var progressView: UIProgressView = UIProgressView(progressViewStyle: .default)
+    fileprivate var progressView: UIProgressView = UIProgressView(progressViewStyle: .default) // Volume
     
-    
-    /// Background color change view color and progressView color
+    /// The view’s background color.
+    /// Default is white color
     public override var backgroundColor: UIColor? {
-        
         didSet {
-            
-            guard let newValue = self.backgroundColor else { return }
+            guard let newValue = self.backgroundColor else {
+                self.backgroundColor = UIColor.white
+                return
+            }
         
             let lightColor = newValue.colorWithSaturation(0.66)
             let darkColor = newValue.colorWithSaturation(0.33)
             
             self.progressView.progressTintColor = darkColor
             self.progressView.trackTintColor = lightColor
-            
         }
-        
     }
     
     public override init(frame: CGRect) {
@@ -58,6 +57,10 @@ public class YFVolumeView: UIWindow {
     
     public override func draw(_ rect: CGRect) {
         self.makeProgressViewConstraints(rect: rect)
+    }
+ 
+    deinit {
+        self.isActive = false
     }
     
 }
@@ -91,6 +94,7 @@ extension YFVolumeView {
 //MARK: - Active
 extension YFVolumeView {
     
+    /// Update AVAudioSession.active state
     public func updateActiveState() {
         UIApplication.shared.setOutputVolumeActive(self.isActive)
     }
@@ -119,7 +123,7 @@ fileprivate extension YFVolumeView {
 //MARK: - Progress
 extension YFVolumeView {
     
-    func updateProgress(_ progress: Float, animated: Bool) {
+    fileprivate func updateProgress(_ progress: Float, animated: Bool) {
         self.progressView.setProgress(progress, animated: animated)
         self.scheduledPresentedTimer()
     }
@@ -160,6 +164,7 @@ extension YFVolumeView {
 //MARK: - Present
 extension YFVolumeView {
     
+    /// Present view
     public func present() {
         
         self.isHidden = false
@@ -167,6 +172,7 @@ extension YFVolumeView {
         
     }
     
+    /// Hide view
     public func hide() {
         
         self.isHidden = true
